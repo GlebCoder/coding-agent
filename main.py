@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from google import genai
 from google.genai import types
 import argparse
+from prompts import system_prompt
 
 def main():
     load_dotenv()
@@ -18,7 +19,8 @@ def main():
     args = parser.parse_args()
     messages = [types.Content(role="user", parts=[types.Part(text=args.user_prompt)])]
     response = client.models.generate_content(model='gemini-2.5-flash',
-                                              contents=messages,)
+                                              contents=messages,
+                                              config=types.GenerateContentConfig(system_instruction=system_prompt, temperature=0))
     if response.usage_metadata is None:
         raise RuntimeError("failed API request")
     prompt_token_count = response.usage_metadata.prompt_token_count
